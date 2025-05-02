@@ -167,6 +167,10 @@ h6,
     outline: none;
     transition: .5s;
 }
+.navbar-brand .logo{
+    width: 40%;
+}
+
 
 .sticky-top.navbar-dark .navbar-nav .nav-link {
     padding: 20px 0;
@@ -192,7 +196,10 @@ h6,
         position: relative;
         background: #FFFFFF;
     }
-
+    .navbar-brand .logo{
+        width: 100px;
+    }
+    
     .navbar-dark .navbar-nav .nav-link,
     .navbar-dark .navbar-nav .nav-link.show,
     .sticky-top.navbar-dark .navbar-nav .nav-link {
