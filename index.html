@@ -79,8 +79,8 @@
     <!-- Navbar & Carousel Start -->
     <div class="container-fluid position-relative p-0">
         <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-2">
-            <a href="index.html" class="navbar-brand p-0">
-                <img class="logo" src="img/vd-normal.png" alt="Image" style="width: 15%;">
+            <a href="index.html" class="navbar-brand p-0 w-50">
+                <img class="logo" src="img/vd-normal.png" alt="Image" style="width: 40%;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
@@ -140,7 +140,7 @@
 
     <!-- Facts Start -->
     <div class="container-fluid facts py-5 pt-lg-0">
-        <div class="container py-5 pt-lg-0">
+        <div class="container py-5 pt-lg-5">
             <div class="row gx-0">
                 <div class="col-lg-4 wow zoomIn" data-wow-delay="0.1s">
                     <div class="fact-box fact-box-1">
@@ -630,7 +630,8 @@
                             <p>Fill in the details and we'll get back to you</p>
                         </div>
 
-                        <form class="quote-form" action="process_form.php" method="POST">
+                        <form class="quote-form" action="process_form.php" method="POST" id="contactForm">
+                            <input type="hidden" name="csrf_token" id="csrf_token" value="">
                             <div class="form-group">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
@@ -652,7 +653,9 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn-submit">
+                            <div id="formFeedback" class="alert d-none"></div>
+
+                            <button type="submit" class="btn-submit" id="submitButton">
                                 <span>Send Message</span>
                                 <i class="fas fa-paper-plane"></i>
                             </button>
@@ -927,7 +930,7 @@
                     <div
                         class="d-flex flex-column align-items-center justify-content-center text-center h-100  p-4">
                         <a href="index.html" class="navbar-brand">
-                            <img class="w-100" src="img/vd-trans.png" alt="Image">
+                            <img class="w-100" src="img/vd-normal.png" alt="Image">
                         </a>
                         <p class="mt-3 mb-4" style="text-align: justify;">We focus on innovation, scalability, and
                             user-centric design, we build powerful web, mobile, and enterprise applications that
@@ -1030,39 +1033,56 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
 
-    <!-- Form Submission Handler -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('.quote-form');
-            
-            form.addEventListener('submit', function(e) {
+            const contactForm = document.getElementById('contactForm');
+            const formFeedback = document.getElementById('formFeedback');
+            const submitButton = document.getElementById('submitButton');
+
+            contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const formData = new FormData(form);
-                
+                // Disable submit button and show loading state
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+
+                // Get form data
+                const formData = new FormData(contactForm);
+
+                // Send form data to server
                 fetch('process_form.php', {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
+                    // Show feedback message
+                    formFeedback.classList.remove('d-none', 'alert-success', 'alert-danger');
+                    formFeedback.classList.add(data.status === 'success' ? 'alert-success' : 'alert-danger');
+                    formFeedback.textContent = data.message;
+
+                    // Reset form and button if successful
                     if (data.status === 'success') {
-                        alert('Thank you for your message! We will get back to you soon.');
-                        form.reset();
+                        contactForm.reset();
+                        submitButton.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
                     } else {
-                        alert('Sorry, there was an error sending your message. Please try again later.');
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Sorry, there was an error sending your message. Please try again later.');
+                    // Show error message
+                    formFeedback.classList.remove('d-none', 'alert-success');
+                    formFeedback.classList.add('alert-danger');
+                    formFeedback.textContent = 'An error occurred. Please try again later.';
+                    
+                    // Reset button
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
                 });
             });
         });
     </script>
-
-    <!-- tsParticles CDN -->
-
 </body>
 
 </html>
