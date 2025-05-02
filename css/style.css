@@ -2462,4 +2462,20 @@ h6,
     .feature-description {
         font-size: 0.75rem;
     }
+
+}
+
+
+/* contact section map */
+.map{
+    width: 600px; 
+    height: 450px; 
+}
+
+
+@media screen and (max-width: 575.98px) {
+    .map{
+        width: 314px; 
+        height: 250px; 
+    }
 }
